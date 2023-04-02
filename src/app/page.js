@@ -1,91 +1,81 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client"
 
-const inter = Inter({ subsets: ['latin'] })
+import StepIndicatorWrapper from "@/components/StepIndicator/StepIndicatorWrapper";
+import { useState } from "react";
+import NavBottom from "@/components/NavBottom";
+import Step1 from "@/components/Steps/Step1";
+import Step2 from "@/components/Steps/Step2";
+import Step3 from "@/components/Steps/Step3";
+import Step4 from "@/components/Steps/Step4";
+import ThankYouPage from "@/components/Steps/ThankYouPage";
+
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+
+    const [user, setUser] = useState({
+        name: "",
+        email: "",
+        phone: ""
+    })
+
+    const [currentStep, setCurrentStep] = useState(1)
+    const [period, setPeriod] = useState("monthly")
+    const [currentPlan, setCurrentPlan] = useState(0)
+    const [currentAddon, setCurrentAddon] = useState([])
+    const [isComplete, setIsComplete] = useState(false)
+    const [step1Validation, setStep1Validation] = useState({
+        name: true,
+        email: true,
+        phone: true
+    })
+
+
+    const mapShowStep = {
+        1: <Step1 user={user} setUser={setUser} validation={step1Validation} />,
+        2: <Step2 period={period} setPeriod={setPeriod} setCurrentPlan={setCurrentPlan} currentPlan={currentPlan} />,
+        3: <Step3 period={period} currentAddon={currentAddon} setCurrentAddon={setCurrentAddon} />,
+        4: <Step4 currentPlan={currentPlan} currentAddon={currentAddon} period={period} setCurrentStep={setCurrentStep} />,
+    }
+
+    function handleNav(to) {
+
+        if (currentStep === 1) {
+
+            const status = Object.values(user).every(item => item)
+
+            // render page first then display error
+            if (status) {
+                setCurrentStep(to)
+            } else {
+                setCurrentStep(1)
+            }
+
+            // then validate
+            return setStep1Validation(prev => ({
+                name: user.name.length > 0,
+                email: user.email.length > 0,
+                phone: user.phone.length > 0,
+            }))
+        }
+
+        return setCurrentStep(to)
+    }
+
+
+
+    return (
+        <div className="h-screen md:flex md:justify-center md:items-center bg-slate-200">
+            <div className="h-screen flex flex-col md:grid md:grid-cols-3 bg-pattern-mobile md:bg-none md:bg-white bg-no-repeat bg-contain bg-top md:w-3/5 md:h-4/5 md:p-4 md:gap-x-4 md:rounded-lg">
+                <StepIndicatorWrapper active={currentStep} />
+                <div className="flex-grow flex flex-col md:px-16 md:col-span-2">
+                    {isComplete ? <ThankYouPage /> : mapShowStep[currentStep]}
+
+                    {!isComplete && <NavBottom curr={currentStep} handleNav={handleNav} setIsComplete={setIsComplete} user={user} />}
+                </div>
+            </div>
         </div>
-      </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
 
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    )
 }

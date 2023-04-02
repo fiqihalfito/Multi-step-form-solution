@@ -1,4 +1,5 @@
 import './globals.css'
+import { ubuntu } from './_fonts'
 
 export const metadata = {
   title: 'Create Next App',
@@ -7,8 +8,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={`${ubuntu.variable}`}>
+      <body className='font-ubuntu bg-slate-200'>
+        {children}
+      </body>
     </html>
   )
 }
