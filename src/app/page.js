@@ -73,6 +73,7 @@ export default function Home() {
                     {!isComplete && <NavBottom curr={currentStep} handleNav={handleNav} setIsComplete={setIsComplete} user={user} />}
                 </div>
             </div>
+            <p>test</p>
         </div>
 
 
